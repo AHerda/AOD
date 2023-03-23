@@ -24,14 +24,25 @@ class Graph {
     int V;
     int E;
     vector<vector<int>> neighbors;
-    //vector<Node> V;
-    //vector<vector<Node>> E;
+    vector<vector<int>> reverse_neighbors;
 
     void add_edge(int u, int v) {
         neighbors[u].push_back(v);
         if (directionality == UNDIRECTED) {
             neighbors[v].push_back(u);
         }
+    }
+
+    vector<vector<int>> reverse() {
+        vector<vector<int>> reversed_neighbors;
+
+        for(int u = 1; u <= V; u++) {
+            for(int v : neighbors[u]) {
+                reversed_neighbors[v].push_back(u);
+            }
+        }
+
+        return reversed_neighbors;
     }
 
     public:
@@ -51,6 +62,8 @@ class Graph {
             myfile >> u >> v;
             add_edge(u, v);
         }
+
+        reverse_neighbors = reverse();
 
         myfile.close();
     }
@@ -80,11 +93,17 @@ class Graph {
         cout << endl;
     }
 
-    void dfs(int start, bool tree) {
+    void dfs(int start, bool tree, vector<int>& component, vector<bool>& visited_global, bool reverse = false) {
         vector<bool> visited(V + 1, false);
         stack<int> stos;
+        
         stos.push(start);
+        
         visited[start] = true;
+        if(!visited_global.empty()) {
+            visited_global[start] = true;
+        }
+        component.push_back(start);
 
         while(!stos.empty()) {
             int u = stos.top();
@@ -94,10 +113,36 @@ class Graph {
                 cout << u << " ";
             }
 
-            for(int v : neighbors[u]) {
-                if(!visited[v]) {
-                    visited[v] = true;
-                    stos.push(v);
+            if(!reverse) {
+                for(int v : neighbors[u]) {
+                    if(!visited[v]) {
+                        visited[v] = true;
+                        if(!visited_global.empty()) {
+                            visited_global[v] = true;
+                        }
+                    
+                        stos.push(v);
+
+                        if(!component.empty()) {
+                            component.push_back(v);
+                        }
+                    }
+                }
+            }
+            else {
+                for(int v : reverse_neighbors[u]) {
+                    if(!visited[v]) {
+                        visited[v] = true;
+                        if(!visited_global.empty()) {
+                            visited_global[v] = true;
+                        }
+                    
+                        stos.push(v);
+
+                        if(!component.empty()) {
+                            component.push_back(v);
+                        }
+                    }
                 }
             }
         }
@@ -151,19 +196,46 @@ class Graph {
         return (results.size() != V);
     }
 
-    vector<vector<int>> reverse() {
-        vector<vector<int>> reversed_neighbors;
+    void strong_connect() {
+        vector<bool> visited(V + 1, false);
+        vector<vector<int>> components;
+        stack<int> s;
 
         for(int u = 1; u <= V; u++) {
-            for(int v : neighbors[u]) {
-                reversed_neighbors[v].push_back(u);
+            if(!visited[u]) {
+                vector<int> component;
+                dfs(u, false, component, visited);
+                for(int v : component) {
+                    s.push(v);
+                }
             }
         }
 
-        return reversed_neighbors;
-    }
+        visited.assign(V + 1, false);
 
-    
+        while(!s.empty()) {
+            int u = s.top();
+            s.pop();
+
+            if(!visited[u]) {
+                vector<int> component;
+                dfs(u, false, component, visited, true);
+                components.push_back(component);
+            }
+        }
+
+        cout << "Liczba silnie spójnych składowych: " << components.size() << endl;
+        for (vector<int>& component : components) {
+            cout << "Liczba wierzchołków w składowej: " << component.size() << endl;
+            if (V <= 200) {
+                cout << "Wierzchołki składowej: ";
+                for (int u : component) {
+                    cout << u << " ";
+                }
+                cout << endl;
+            }
+        }
+    }
 
     void print_graph() {
         cout << "Liczba wierzchołków: " << V << endl;
@@ -183,5 +255,7 @@ class Graph {
 
 int main(int argc, char** argv) {
     Graph graf("./resources/aod_testy1/4/u4a-2.txt");
-    graf.dfs(3, true);
+    vector<int> maciek;
+    vector<bool> maciek2;
+    graf.dfs(3, true, maciek, maciek2);
 }
