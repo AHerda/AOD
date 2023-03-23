@@ -16,7 +16,7 @@ using namespace std;
 template <class T>
 class DynamicArray {
 private:
-    T* array = NULL;
+    T* array = nullptr;
     int size;
  
     int capacity;
@@ -55,11 +55,11 @@ public:
     void push_back(T value)
     {
         if (size == capacity) {
- 
             growArray();
         }
  
         array[size] = value;
+        cout << size;
         size++;
     }
  
@@ -180,6 +180,7 @@ class Graph {
 
     void add_edge(int u, int v) {
         neighbors.get(u).push_back(v);
+        cout << neighbors.get(u).getSize() << endl;
         reverse_neighbors.get(v).push_back(u);
         if (directionality == UNDIRECTED) {
             neighbors.get(v).push_back(u);
@@ -201,7 +202,6 @@ class Graph {
         int u, v;
         for(int i = 0; i < E; i++) {
             myfile >> u >> v;
-            cout << u << " " << v;
             add_edge(u, v);
         }
 
