@@ -85,7 +85,85 @@ class Graph {
         stack<int> stos;
         stos.push(start);
         visited[start] = true;
+
+        while(!stos.empty()) {
+            int u = stos.top();
+            stos.pop();
+
+            if(tree) {
+                cout << u << " ";
+            }
+
+            for(int v : neighbors[u]) {
+                if(!visited[v]) {
+                    visited[v] = true;
+                    stos.push(v);
+                }
+            }
+        }
+
+        cout << endl;
     }
+
+    bool topological_sort() {
+        vector<int> results;
+        vector<int> E_in(V + 1, 0);
+
+        for(int u = 1; u <= V; u++) {
+            for(int v : neighbors[u]) {
+                E_in[v]++;
+            }
+        }
+
+        queue<int> que;
+
+        for(int u = 1; u <= V; u++) {
+            if(E_in[u] == 0) {
+                que.push(u);
+            }
+        }
+
+        while(!que.empty()) {
+            int u = que.front();
+            que.pop();
+            results.push_back(u);
+
+            for(int v : neighbors[u]) {
+                E_in[v]--;
+                if(E_in[v] == 0) {
+                    que.push(v);
+                }
+            }
+        }
+
+        if(V <= 200) {
+            for(int i = 0; i < results.size(); i++) {
+                cout << results[i];
+
+                if(i + 1 != results.size()) {
+                    cout << " ";
+                }
+
+                cout << endl;
+            }
+        }
+
+        return (results.size() != V);
+    }
+
+    vector<vector<int>> reverse() {
+        vector<vector<int>> reversed_neighbors;
+
+        for(int u = 1; u <= V; u++) {
+            for(int v : neighbors[u]) {
+                reversed_neighbors[v].push_back(u);
+            }
+        }
+
+        return reversed_neighbors;
+    }
+
+    
 
     void print_graph() {
         cout << "Liczba wierzchołków: " << V << endl;
@@ -105,5 +183,5 @@ class Graph {
 
 int main(int argc, char** argv) {
     Graph graf("./resources/aod_testy1/4/u4a-2.txt");
-    graf.print_graph();
+    graf.dfs(3, true);
 }
