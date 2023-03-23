@@ -59,7 +59,6 @@ public:
         }
  
         array[size] = value;
-        cout << size;
         size++;
     }
  
@@ -180,7 +179,6 @@ class Graph {
 
     void add_edge(int u, int v) {
         neighbors.get(u).push_back(v);
-        cout << neighbors.get(u).getSize() << endl;
         reverse_neighbors.get(v).push_back(u);
         if (directionality == UNDIRECTED) {
             neighbors.get(v).push_back(u);
