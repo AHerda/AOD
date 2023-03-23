@@ -16,12 +16,13 @@ using namespace std;
 template <class T>
 class DynamicArray {
 private:
-    T* array = nullptr;
+    
     int size;
  
     int capacity;
  
 public:
+    T* array = nullptr;
     DynamicArray()
     {
         capacity = 1;
@@ -59,18 +60,23 @@ public:
         }
  
         array[size] = value;
+        
         size++;
     }
  
     void pop_back()
     {
-        array[size - 1] = nullptr;
+        array[size - 1] = (int) NULL;
  
         size--;
  
         if (size == (capacity / 2)) {
             shrinkArray();
         }
+    }
+
+    void pop_front() {
+        deleteAt(0);
     }
  
     void growArray()
@@ -133,24 +139,13 @@ public:
             array[i] = array[i + 1];
         }
  
-        array[size - 1] = nullptr;
+        array[size - 1] = (int) NULL;
  
         size--;
  
         if (size == (capacity / 2)) {
             shrinkArray();
         }
-    }
- 
-    void printArrayDetails()
-    {
-        cout << "Elements of array : ";
-        for (int i = 0; i < size; i++) {
-            cout << array[i] << " ";
-        }
-        cout << endl;
-        cout << "No of elements in array : " << size
-             << ", Capacity of array :" << capacity << endl;
     }
  
     bool isEmpty()
@@ -178,11 +173,11 @@ class Graph {
     DynamicArray<DynamicArray<int>> reverse_neighbors;
 
     void add_edge(int u, int v) {
-        neighbors.get(u).push_back(v);
-        reverse_neighbors.get(v).push_back(u);
+        neighbors.array[u].push_back(v);
+        reverse_neighbors.array[v].push_back(u);
         if (directionality == UNDIRECTED) {
-            neighbors.get(v).push_back(u);
-            reverse_neighbors.get(u).push_back(v);
+            neighbors.array[v].push_back(u);
+            reverse_neighbors.array[u].push_back(v);
         }
     }
 
@@ -197,6 +192,13 @@ class Graph {
         myfile >> V;
         myfile >> E;
 
+        for(int i = 0; i < V; i++) {
+            DynamicArray<int> temp1;
+            neighbors.push_back(temp1);
+            DynamicArray<int> temp2;
+            reverse_neighbors.push_back(temp2);
+        }
+
         int u, v;
         for(int i = 0; i < E; i++) {
             myfile >> u >> v;
@@ -209,22 +211,22 @@ class Graph {
     void bfs(int start, bool tree) {
         DynamicArray<int> visited;
         visited.fill(V + 1, 0);
-        queue<int> que;
-        que.push(start);
+        DynamicArray<int> que;
+        que.push_back(start);
         visited.set(start, 1);
 
-        while(!que.empty()) {
-            int u = que.front();
-            que.pop();
+        while(!que.isEmpty()) {
+            int u = que.array[0];
+            que.pop_front();
 
             if(tree) {
                 cout << u << " ";
             }
 
-            for(int i = 0; i < neighbors.get(u).getSize(); i++) {
-                if(visited.get(neighbors.get(u).get(i)) == 0) {
-                    visited.set(neighbors.get(u).get(i), 1);
-                    que.push(neighbors.get(u).get(i));
+            for(int i = 0; i < neighbors.array[u].getSize(); i++) {
+                if(visited.get(neighbors.array[u].array[i]) == 0) {
+                    visited.set(neighbors.array[u].array[i], 1);
+                    que.push_back(neighbors.array[u].array[i]);
                 }
             }
         }
@@ -235,9 +237,9 @@ class Graph {
     void dfs(int start, bool tree, DynamicArray<int> component, DynamicArray<int> visited_global, bool reverse = false) {
         DynamicArray<int> visited;
         visited.fill(V + 1, 0);
-        stack<int> stos;
+        DynamicArray<int> stos;
         
-        stos.push(start);
+        stos.push_back(start);
         
         visited.set(start, 1);
         if(!visited_global.isEmpty()) {
@@ -245,42 +247,42 @@ class Graph {
         }
         component.push_back(start);
 
-        while(!stos.empty()) {
-            int u = stos.top();
-            stos.pop();
+        while(!stos.isEmpty()) {
+            int u = stos.array[stos.getSize() - 1];
+            stos.pop_back();
 
             if(tree) {
                 cout << u << " ";
             }
 
             if(!reverse) {
-                for(int i = 0; i < neighbors.get(u).getSize(); i++) {
-                    if(visited.get(neighbors.get(u).get(i)) == 0) {
-                        visited.set(neighbors.get(u).get(i), 1);
+                for(int i = 0; i < neighbors.array[u].getSize(); i++) {
+                    if(visited.get(neighbors.array[u].array[i]) == 0) {
+                        visited.set(neighbors.array[u].array[i], 1);
                         if(!visited_global.isEmpty()) {
-                            visited_global.set(neighbors.get(u).get(i), 1);
+                            visited_global.set(neighbors.array[u].array[i], 1);
                         }
                     
-                        stos.push(neighbors.get(u).get(i));
+                        stos.push_back(neighbors.array[u].array[i]);
 
                         if(!component.isEmpty()) {
-                            component.push_back(neighbors.get(u).get(i));
+                            component.push_back(neighbors.array[u].array[i]);
                         }
                     }
                 }
             }
             else {
-                for(int i = 0; i < reverse_neighbors.get(u).getSize(); i++) {
-                    if(visited.get(reverse_neighbors.get(u).get(i)) == 0) {
-                        visited.set(neighbors.get(u).get(i), 1);
+                for(int i = 0; i < reverse_neighbors.array[u].getSize(); i++) {
+                    if(visited.get(reverse_neighbors.array[u].array[i]) == 0) {
+                        visited.set(neighbors.array[u].array[i], 1);
                         if(!visited_global.isEmpty()) {
-                            visited_global.set(neighbors.get(u).get(i), 1);
+                            visited_global.set(neighbors.array[u].array[i], 1);
                         }
                     
-                        stos.push(neighbors.get(u).get(i));
+                        stos.push_back(neighbors.array[u].array[i]);
 
                         if(!component.isEmpty()) {
-                            component.push_back(neighbors.get(u).get(i));
+                            component.push_back(neighbors.array[u].array[i]);
                         }
                     }
                 }
@@ -296,35 +298,35 @@ class Graph {
         E_in.fill(V + 1, 0);
 
         for(int u = 1; u <= V; u++) {
-            for(int i = 0; i < neighbors.get(u).getSize(); i++) {
-                E_in.set(neighbors.get(u).get(i), E_in.get(neighbors.get(u).get(i)) + 1);
+            for(int i = 0; i < neighbors.array[u].getSize(); i++) {
+                E_in.set(neighbors.array[u].array[i], E_in.get(neighbors.array[u].array[i]) + 1);
             }
         }
 
-        queue<int> que;
+        DynamicArray<int> que;
 
         for(int u = 1; u <= V; u++) {
-            if(E_in.get(u) == 0) {
-                que.push(u);
+            if(E_in.array[u] == 0) {
+                que.push_back(u);
             }
         }
 
-        while(!que.empty()) {
-            int u = que.front();
-            que.pop();
+        while(!que.isEmpty()) {
+            int u = que.array[0];
+            que.pop_front();
             results.push_back(u);
 
-            for(int i = 0; i < neighbors.get(u).getSize(); i++) {
-                E_in.set(neighbors.get(u).get(i), E_in.get(neighbors.get(u).get(i)) - 1);
-                if(E_in.get(neighbors.get(u).get(i)) == 0) {
-                    que.push(neighbors.get(u).get(i));
+            for(int i = 0; i < neighbors.array[u].getSize(); i++) {
+                E_in.set(neighbors.array[u].array[i], E_in.get(neighbors.array[u].array[i]) - 1);
+                if(E_in.get(neighbors.array[u].array[i]) == 0) {
+                    que.push_back(neighbors.array[u].array[i]);
                 }
             }
         }
 
         if(V <= 200) {
             for(int i = 0; i < results.getSize(); i++) {
-                cout << results.get(i);
+                cout << results.array[i];
 
                 if(i + 1 != results.getSize()) {
                     cout << " ";
@@ -341,14 +343,14 @@ class Graph {
         DynamicArray<int> visited;
         visited.fill(V + 1, 0);
         DynamicArray<DynamicArray<int>> components;
-        stack<int> s;
+        DynamicArray<int> stos;
 
         for(int u = 1; u <= V; u++) {
-            if(visited.get(u) == 0) {
+            if(visited.array[u] == 0) {
                 DynamicArray<int> component;
                 dfs(u, false, component, visited);
                 for(int i = 0; i < component.getSize(); i++) {
-                    s.push(component.get(i));
+                    stos.push_back(component.array[i]);
                 }
             }
         }
@@ -356,11 +358,11 @@ class Graph {
         DynamicArray<int> visited2;
         visited2.fill(V + 1, 0);
 
-        while(!s.empty()) {
-            int u = s.top();
-            s.pop();
+        while(!stos.isEmpty()) {
+            int u = stos.array[stos.getSize() - 1];
+            stos.pop_back();
 
-            if(visited2.get(u) == 0) {
+            if(visited2.array[u] == 0) {
                 DynamicArray<int> component;
                 dfs(u, false, component, visited, true);
                 components.push_back(component);
@@ -369,11 +371,11 @@ class Graph {
 
         cout << "Liczba silnie spójnych składowych: " << components.getSize() << endl;
         for (int i = 0; i < components.getSize(); i++) {
-            cout << "Liczba wierzchołków w składowej: " << components.get(i).getSize() << endl;
+            cout << "Liczba wierzchołków w składowej: " << components.array[i].getSize() << endl;
             if (V <= 200) {
                 cout << "Wierzchołki składowej: ";
-                for (int j = 0; j < components.get(i).getSize(); j++) {
-                    cout << components.get(i).get(j) << " ";
+                for (int j = 0; j < components.array[i].getSize(); j++) {
+                    cout << components.array[i].array[j] << " ";
                 }
                 cout << endl;
             }
@@ -388,8 +390,8 @@ class Graph {
 
         for (int u = 1; u <= V; u++) {
             cout << u << ": ";
-            for (int i = 0; i < neighbors.get(u).getSize(); i++) {
-                cout << neighbors.get(u).get(i) << " ";
+            for (int i = 0; i < neighbors.array[u].getSize(); i++) {
+                cout << neighbors.array[u].array[i] << " ";
             }
             cout << endl;
         }
