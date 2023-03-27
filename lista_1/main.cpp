@@ -198,7 +198,9 @@ class Graph {
             cout << endl;
         }
 
-        return (results.size() != V);
+        int size = results.size();
+
+        return (size != V);
     }
 
     /*void strong_connect() {
@@ -253,7 +255,7 @@ class Graph {
         for (int u = 1; u <= V; u++) {
             cout << u << ": ";
             for (int v : neighbors[u]) {
-                cout << neighbors.array[u].array[i] << " ";
+                cout << v << " ";
             }
             cout << endl;
         }
@@ -263,9 +265,9 @@ class Graph {
 int main(int argc, char** argv) {
     Graph graf("resources/aod_testy1/2/g2a-1.txt");
     graf.print_graph();
-    //cout << graf.V;
-    //graf.topological_sort();
-    //graf.bfs(2, true);
+    cout << graf.topological_sort() << endl;
+    graf.bfs(2, true);
+    graf.dfs(2, true);
 
 
     return 0;
