@@ -16,9 +16,7 @@ using namespace std;
 template <class T>
 class DynamicArray {
 private:
-    
     int size;
- 
     int capacity;
  
 public:
@@ -224,7 +222,7 @@ class Graph {
             }
 
             for(int i = 0; i < neighbors.array[u].getSize(); i++) {
-                if(visited.get(neighbors.array[u].array[i]) == 0) {
+                if(visited.array[neighbors.array[u].array[i]] == 0) {
                     visited.set(neighbors.array[u].array[i], 1);
                     que.push_back(neighbors.array[u].array[i]);
                 }
@@ -257,7 +255,7 @@ class Graph {
 
             if(!reverse) {
                 for(int i = 0; i < neighbors.array[u].getSize(); i++) {
-                    if(visited.get(neighbors.array[u].array[i]) == 0) {
+                    if(visited.array[neighbors.array[u].array[i]] == 0) {
                         visited.set(neighbors.array[u].array[i], 1);
                         if(!visited_global.isEmpty()) {
                             visited_global.set(neighbors.array[u].array[i], 1);
@@ -273,7 +271,7 @@ class Graph {
             }
             else {
                 for(int i = 0; i < reverse_neighbors.array[u].getSize(); i++) {
-                    if(visited.get(reverse_neighbors.array[u].array[i]) == 0) {
+                    if(visited.array[reverse_neighbors.array[u].array[i]] == 0) {
                         visited.set(neighbors.array[u].array[i], 1);
                         if(!visited_global.isEmpty()) {
                             visited_global.set(neighbors.array[u].array[i], 1);
@@ -299,7 +297,7 @@ class Graph {
 
         for(int u = 1; u <= V; u++) {
             for(int i = 0; i < neighbors.array[u].getSize(); i++) {
-                E_in.set(neighbors.array[u].array[i], E_in.get(neighbors.array[u].array[i]) + 1);
+                E_in.set(neighbors.array[u].array[i], E_in.array[neighbors.array[u].array[i]] + 1);
             }
         }
 
@@ -318,7 +316,7 @@ class Graph {
 
             for(int i = 0; i < neighbors.array[u].getSize(); i++) {
                 E_in.set(neighbors.array[u].array[i], E_in.get(neighbors.array[u].array[i]) - 1);
-                if(E_in.get(neighbors.array[u].array[i]) == 0) {
+                if(E_in.array[neighbors.array[u].array[i]] == 0) {
                     que.push_back(neighbors.array[u].array[i]);
                 }
             }
@@ -402,10 +400,9 @@ int main(int argc, char** argv) {
     Graph graf("resources/aod_testy1/2/g2a-1.txt");
     graf.print_graph();
     //cout << graf.V;
-    //vector<int> maciek;
-    //vector<bool> maciek2;
-    graf.topological_sort();
+    //graf.topological_sort();
     graf.bfs(2, true);
+
 
     return 0;
 }
