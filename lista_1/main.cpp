@@ -101,64 +101,6 @@ class Graph {
         cout << endl;
     }
 
-    /*void dfs(int start, bool tree, vector<int> component, vector<int> visited_global, bool reverse = false) {
-        vector<int> visited;
-        visited.fill(V + 1, 0);
-        vector<int> stos;
-        
-        stos.push_back(start);
-        
-        visited.set(start, 1);
-        if(!visited_global.isEmpty()) {
-            visited_global.set(start, 1);
-        }
-        component.push_back(start);
-
-        while(!stos.isEmpty()) {
-            int u = stos.array[stos.getSize() - 1];
-            stos.pop_back();
-
-            if(tree) {
-                cout << u << " ";
-            }
-
-            if(!reverse) {
-                for(int i = 0; i < neighbors.array[u].getSize(); i++) {
-                    if(visited.array[neighbors.array[u].array[i]] == 0) {
-                        visited.set(neighbors.array[u].array[i], 1);
-                        if(!visited_global.isEmpty()) {
-                            visited_global.set(neighbors.array[u].array[i], 1);
-                        }
-                    
-                        stos.push_back(neighbors.array[u].array[i]);
-
-                        if(!component.isEmpty()) {
-                            component.push_back(neighbors.array[u].array[i]);
-                        }
-                    }
-                }
-            }
-            else {
-                for(int i = 0; i < reverse_neighbors.array[u].getSize(); i++) {
-                    if(visited.array[reverse_neighbors.array[u].array[i]] == 0) {
-                        visited.set(neighbors.array[u].array[i], 1);
-                        if(!visited_global.isEmpty()) {
-                            visited_global.set(neighbors.array[u].array[i], 1);
-                        }
-                    
-                        stos.push_back(neighbors.array[u].array[i]);
-
-                        if(!component.isEmpty()) {
-                            component.push_back(neighbors.array[u].array[i]);
-                        }
-                    }
-                }
-            }
-        }
-
-        cout << endl;
-    }*/
-
     bool topological_sort() {
         vector<int> results;
         vector<int> E_in;
@@ -203,48 +145,80 @@ class Graph {
         return (size != V);
     }
 
-    /*void strong_connect() {
+    void dfs2(int start, vector<int>* component, vector<int> visited_global, bool reverse = false) {
         vector<int> visited;
-        visited.fill(V + 1, 0);
+        visited.assign(V + 1, 0);
+        stack<int> st;
+        
+        st.push(start);
+        
+        visited[start] = 1;
+        visited_global[start] = 1;
+
+        component->push_back(start);
+
+        while(!st.empty()) {
+            int u = st.top();
+            st.pop();
+
+            vector<int> temp = (reverse) ? reverse_neighbors[u] : neighbors[u];
+
+            for(int v : temp) {
+                if(visited[v] == 0) {
+                    visited[v] = 1;
+                    visited_global[v] = 1;
+                    
+                    st.push(v);
+
+                    component->push_back(v);
+                }
+            }
+        }
+    }
+
+    void strong_connect() {
+        vector<int> visited;
+        visited.assign(V + 1, 0);
         vector<vector<int>> components;
-        vector<int> stos;
+        stack<int> st;
 
         for(int u = 1; u <= V; u++) {
-            if(visited.array[u] == 0) {
+            if(visited[u] == 0) {
                 vector<int> component;
-                dfs(u, false, component, visited);
-                for(int i = 0; i < component.getSize(); i++) {
-                    stos.push_back(component.array[i]);
+                dfs2(u, &component, visited);
+                for(int v : component) {
+                    st.push(v);
                 }
             }
         }
 
-        vector<int> visited2;
-        visited2.fill(V + 1, 0);
+        for(int i = 0; i < visited.size(); i++) {
+            visited[i] = 0;
+        }
 
-        while(!stos.isEmpty()) {
-            int u = stos.array[stos.getSize() - 1];
-            stos.pop_back();
+        while(!st.empty()) {
+            int u = st.top();
+            st.pop();
 
-            if(visited2.array[u] == 0) {
+            if(visited[u] == 0) {
                 vector<int> component;
-                dfs(u, false, component, visited, true);
+                dfs2(u, &component, visited, true);
                 components.push_back(component);
             }
         }
 
-        cout << "Liczba silnie spójnych składowych: " << components.getSize() << endl;
-        for (int i = 0; i < components.getSize(); i++) {
-            cout << "Liczba wierzchołków w składowej: " << components.array[i].getSize() << endl;
+        cout << "Liczba silnie spójnych składowych: " << components.size() << endl;
+        for (vector<int> component : components) {
+            cout << "Liczba wierzchołków w składowej: " << component.size() << endl;
             if (V <= 200) {
                 cout << "Wierzchołki składowej: ";
-                for (int j = 0; j < components.array[i].getSize(); j++) {
-                    cout << components.array[i].array[j] << " ";
+                for (int u : component) {
+                    cout << u << " ";
                 }
                 cout << endl;
             }
         }
-    }*/
+    }
 
     void print_graph() {
         cout << "Liczba wierzchołków: " << V << endl;
@@ -263,11 +237,12 @@ class Graph {
 };
 
 int main(int argc, char** argv) {
-    Graph graf("resources/aod_testy1/2/g2a-1.txt");
-    graf.print_graph();
-    cout << graf.topological_sort() << endl;
-    graf.bfs(2, true);
-    graf.dfs(2, true);
+    Graph graf("resources/aod_testy1/3/g3-5.txt");
+    //graf.print_graph();
+    //cout << graf.topological_sort() << endl;
+    //graf.bfs(2, true);
+    //graf.dfs(2, true);
+    graf.strong_connect();
 
 
     return 0;
