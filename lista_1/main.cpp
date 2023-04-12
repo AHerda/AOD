@@ -145,32 +145,34 @@ class Graph {
         return (size != V);
     }
 
-    void dfs2(int start, vector<int>* component, vector<int> visited_global, bool reverse = false) {
+    void dfs2(int start, vector<int>* component, vector<int>* visited_global, bool reverse = false) {
         vector<int> visited;
         visited.assign(V + 1, 0);
-        stack<int> st;
+        stack<int> Stack;
+        stack<int>* st = &Stack;
         
-        st.push(start);
+        st->push(start);
         
         visited[start] = 1;
-        visited_global[start] = 1;
+        (*visited_global)[start] = 1;
 
         component->push_back(start);
 
-        while(!st.empty()) {
-            int u = st.top();
-            st.pop();
+        while(!st->empty()) {
+            int u = st->top();
+            st->pop();
 
             vector<int> temp = (reverse) ? reverse_neighbors[u] : neighbors[u];
 
             for(int v : temp) {
-                if(visited[v] == 0) {
+                if((*visited_global)[v] == 0) {
                     visited[v] = 1;
-                    visited_global[v] = 1;
+                    if((*visited_global)[v] == 0) {
+                        component->push_back(v);
+                        (*visited_global)[v] = 1;
+                    }
                     
-                    st.push(v);
-
-                    component->push_back(v);
+                    st->push(v);
                 }
             }
         }
@@ -185,10 +187,9 @@ class Graph {
         for(int u = 1; u <= V; u++) {
             if(visited[u] == 0) {
                 vector<int> component;
-                dfs2(u, &component, visited);
-                for(int v : component) {
+                dfs2(u, &component, &visited);
+                for(int v : component)
                     st.push(v);
-                }
             }
         }
 
@@ -202,7 +203,7 @@ class Graph {
 
             if(visited[u] == 0) {
                 vector<int> component;
-                dfs2(u, &component, visited, true);
+                dfs2(u, &component, &visited, true);
                 components.push_back(component);
             }
         }
@@ -220,30 +221,32 @@ class Graph {
         }
     }
 
-    void print_graph() {
+    void print_graph(bool neighbors_show = true) {
         cout << "Liczba wierzchołków: " << V << endl;
         cout << "Liczba krawędzi: " << E << endl;
         cout << "Skierowanie: " << (directionality == DIRECTED ? "TAK" : "NIE") << endl;
-        cout << "Lista sąsiedztwa:" << endl;
 
-        for (int u = 1; u <= V; u++) {
-            cout << u << ": ";
-            for (int v : neighbors[u]) {
-                cout << v << " ";
+        if(neighbors_show) {
+            cout << "Lista sąsiedztwa:" << endl;
+
+            for (int u = 1; u <= V; u++) {
+                cout << u << ": ";
+                for (int v : neighbors[u]) {
+                    cout << v << " ";
+                }
+                cout << endl;
             }
-            cout << endl;
         }
     }
 };
 
 int main(int argc, char** argv) {
-    Graph graf("resources/aod_testy1/3/g3-5.txt");
-    //graf.print_graph();
+    Graph graf("resources/aod_testy1/3/g3-6.txt");
+    graf.print_graph(false);
     //cout << graf.topological_sort() << endl;
     //graf.bfs(2, true);
     //graf.dfs(2, true);
     graf.strong_connect();
-
 
     return 0;
 }
