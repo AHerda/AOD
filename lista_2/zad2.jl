@@ -10,6 +10,9 @@ cost = rand(rng, 1:n, n, n)
 
 time_cap = n * 1.5
 
+start = 1
+stop = 10
+
 model = Model(HigHS.Optimizer)
 
-@variable
+@variable(model, )
