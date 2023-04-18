@@ -35,6 +35,6 @@ println("\nTygodniowe czasy korzystania z maszyn, podzielone na produkty:")
 display(round.(Int, value.(var)))
 println("\nTygodniowe produkcje w kg:")
 for i in 1:4
-    println("   Produkt $(i): ", round(Int, value(sum((var ./ mpk)[i, :]))), "kg")
+    println("\tProdukt $(i): ", round(Int, value(sum((var ./ mpk)[i, :]))), "kg")
 end
 println("\nZysk ze sprzedaży tygodniowej produkcji: ", round(Int, objective_value(model)), " zł")

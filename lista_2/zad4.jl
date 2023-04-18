@@ -16,13 +16,12 @@ model = Model(HiGHS.Optimizer)
 
 @variable(model, var[1:m, 1:n], Bin)
 @constraint(model, [i in 1:m, j in 1:n], var[i, j] + conteners[i, j] <= 1)
-for i in 1:m, j in 1:n
-    if conteners[i, j] == 1
-        col_range = max(1, i - k):min(m, i + k)
-        row_range = max(1, j - k):min(n, j + k)
-        @constraint(model, (sum(var[i, row_range]) + sum(var[col_range, j])) >= 1)
-    end
+for i in 1:m, j in 1:n; conteners[i, j] == 1
+    col_range = max(1, i - k):min(m, i + k)
+    row_range = max(1, j - k):min(n, j + k)
+    @constraint(model, (sum(var[i, row_range]) + sum(var[col_range, j])) >= 1)
 end
+
 @objective(model, Min, sum(var))
 
 optimize!(model)
