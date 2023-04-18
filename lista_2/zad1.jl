@@ -1,53 +1,38 @@
 using JuMP
 import HiGHS
 
-lotniska = Dict("Lotnisko1" => 110000,
-    "Lotnisko2" => 220000,
-    "Lotnisko3" => 330000,
-    "Lotnisko4" => 440000)
-L = keys(lotniska)
+lotniska = [110000 220000 330000 440000]
+L = 1:4
 
-firmy = Dict("Firma1" => 275000,
-    "Firma2" => 550000,
-    "Firma3" => 660000)
-F = keys(firmy)
+firmy = [275000, 550000, 660000]
+F = 1:3
 
-ceny = Dict("Firma1 => Lotnisko1" => 10,
-    "Firma1 => Lotnisko2" => 10,
-    "Firma1 => Lotnisko3" => 9,
-    "Firma1 => Lotnisko4" => 11,
-    "Firma2 => Lotnisko1" => 7,
-    "Firma2 => Lotnisko2" => 11,
-    "Firma2 => Lotnisko3" => 12,
-    "Firma2 => Lotnisko4" => 13,
-    "Firma3 => Lotnisko1" => 8,
-    "Firma3 => Lotnisko2" => 14,
-    "Firma3 => Lotnisko3" => 4,
-    "Firma3 => Lotnisko4" => 9)
-
+ceny = [
+#   F1 F2 F3
+    10 7 8;     # Lotnisko 1
+    10 11 14;   # Lotnisko 2
+    9 12 4;     # Lotnisko 3
+    11 13 9     # Lotnisko 4
+]
 
 model = Model(HiGHS.Optimizer)
 
-@variable(model, 0 <= ilosc[F, L])
-for f in F
-    @constraint(model, sum(ilosc[f, :]) <= firmy[f])
-end
-for l in L
-    @constraint(model, sum(ilosc[:, l]) >= lotniska[l])
-end
-@objective(model, Min, sum(ceny["$(f) => $(l)"] * ilosc[f, l] for f in F, l in L))
+@variable(model, 0 <= var[L, F])
+@constraint(model, [f in F], sum(var[:, f]) <= firmy[f])
+@constraint(model, [l in L],sum(var[l, :]) >= lotniska[l])
+@objective(model, Min, sum((ceny .* var)))
 
 optimize!(model)
 solution_summary(model)
-println("\nCena ogólna: ", Int(sum(ceny["$(f) => $(l)"] * value(ilosc[f, l]) for f in F, l in L)), "\n")
+println("\nCena ogólna: ", round(Int, objective_value(model)), "\n")
 for f in F, l in L
-    println(f, " => ", l, ": ", value(ilosc[f, l]))
+    println("Firma", f, " => Lotnisko", l, ": ", round(Int, value(var[l, f])))
 end
 print("\n")
 for l in L
-    println(l, ": ", value(sum(ilosc[:, l])))
+    println(l, ": ", round(Int, value(sum(var[l, :]))))
 end
 print("\n")
 for f in F
-    println(f, ": ", value(sum(ilosc[f, :])))
+    println(f, ": ", round(Int, value(sum(var[:, f]))))
 end

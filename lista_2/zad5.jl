@@ -2,12 +2,12 @@ using JuMP
 using Random
 import HiGHS
 
-time_max = 60           # czas (w godzinach) maksymalny jaki może pracować jedna maszyna w tygodniu
-ppk = [9 7 6 5]         # price per kilo produktów 1, 2, 3, 4
-cpk = [4 1 1 1]         # cost per kilo za produkty 1, 2, 3, 4
-ipk = ppk - cpk         # income per kilo za profukty 1, 2, 3, 4
-cph = [2, 2, 3]         # cost per hour dla maszyn 1, 2, 3
-maks_demand = [400 100 150 500]  # maksymalny tygodniowy popyt na produkty 1, 2, 3, 4
+time_max = 60                   # czas (w godzinach) maksymalny jaki może pracować jedna maszyna w tygodniu
+ppk = [9 7 6 5]                 # price per kilo produktów 1, 2, 3, 4
+cpk = [4 1 1 1]                 # cost per kilo za produkty 1, 2, 3, 4
+ipk = ppk - cpk                 # income per kilo za profukty 1, 2, 3, 4
+cph = [2, 2, 3]                 # cost per hour dla maszyn 1, 2, 3
+maks_demand = [400 100 150 500] # maksymalny tygodniowy popyt na produkty 1, 2, 3, 4
 
 # minutes per kilogram dla produktów i maszyn
 mpk = [
