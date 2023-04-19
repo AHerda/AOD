@@ -18,8 +18,11 @@ ceny = [
 model = Model(HiGHS.Optimizer)
 
 @variable(model, 0 <= var[L, F])
+# Firmy nie mogą wysłać więcej niż mają
 @constraint(model, [f in F], sum(var[:, f]) <= firmy[f])
-@constraint(model, [l in L],sum(var[l, :]) >= lotniska[l])
+# Ustawiamy najmniejszą ilość paliwa jakie każde lotnisko potrzebuje
+@constraint(model, [l in L], sum(var[l, :]) >= lotniska[l])
+# Funkcja celu
 @objective(model, Min, sum((ceny .* var)))
 
 optimize!(model)
@@ -30,9 +33,9 @@ for f in F, l in L
 end
 print("\n")
 for l in L
-    println(l, ": ", round(Int, value(sum(var[l, :]))))
+    println("Lotnisko", l, ": ", round(Int, value(sum(var[l, :]))))
 end
 print("\n")
 for f in F
-    println(f, ": ", round(Int, value(sum(var[:, f]))))
+    println("Firma", f, ": ", round(Int, value(sum(var[:, f]))))
 end

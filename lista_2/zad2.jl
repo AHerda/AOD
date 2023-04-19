@@ -30,14 +30,14 @@ model = Model(HiGHS.Optimizer)
 @variable(model, var[1:n, 1:n], Bin)
 # Nie może być połączenia tam gdzie cena == 0, połączenie nie istnieje
 @constraint(model, [i in 1:n, j in 1:n; cost[i, j] == 0], var[i, j] == 0)
-# Wyjście i wejście z każdego node'a może byctylko jedno
+# Wyjście i wejście z każdego node'a może byc tylko jedno
 @constraint(model, [i in 1:n], sum(var[i, :]) <= 1)
 @constraint(model, [i in 1:n], sum(var[:, i]) <= 1)
 # Bilans wszystkich pubnktów, zachowanie poprawności ścieżki
 @constraint(model, [i in 1:n], sum(var[i, :]) - sum(var[:, i]) == bilance[i])
 #czas nie może przekraczać wyznaczonego ograniczenia
 @constraint(model, sum(var .* time) <= time_cap)
-
+# Funkcja celu
 @objective(model, Min, sum(var .* cost))
 
 optimize!(model)
