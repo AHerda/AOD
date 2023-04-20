@@ -2,6 +2,7 @@
 #include <fstream>
 #include <queue>
 #include <stack>
+#include <list>
 
 using namespace std;
 
@@ -145,78 +146,150 @@ class Graph {
         return (size != V);
     }
 
-    void dfs2(int start, vector<int>* component, vector<int>* visited_global, bool reverse = false) {
-        vector<int> visited;
-        visited.assign(V + 1, 0);
-        stack<int> Stack;
-        stack<int>* st = &Stack;
-        
-        st->push(start);
-        
+    void dfs2(int start, vector<int>& visited, vector<int>& component, bool reversed = false) {
         visited[start] = 1;
-        (*visited_global)[start] = 1;
-
-        component->push_back(start);
-
-        while(!st->empty()) {
-            int u = st->top();
-            st->pop();
-
-            vector<int> temp = (reverse) ? reverse_neighbors[u] : neighbors[u];
-
-            for(int v : temp) {
-                if((*visited_global)[v] == 0) {
-                    visited[v] = 1;
-                    if((*visited_global)[v] == 0) {
-                        component->push_back(v);
-                        (*visited_global)[v] = 1;
-                    }
-                    
-                    st->push(v);
-                }
-            }
-        }
-    }
-
-    void strong_connect() {
-        vector<int> visited;
-        visited.assign(V + 1, 0);
-        vector<vector<int>> components;
         stack<int> st;
 
-        for(int u = 1; u <= V; u++) {
-            if(visited[u] == 0) {
-                vector<int> component;
-                dfs2(u, &component, &visited);
-                for(int v : component)
-                    st.push(v);
-            }
-        }
-
-        for(int i = 0; i < visited.size(); i++) {
-            visited[i] = 0;
-        }
+        st.push(start);
 
         while(!st.empty()) {
             int u = st.top();
             st.pop();
 
-            if(visited[u] == 0) {
-                vector<int> component;
-                dfs2(u, &component, &visited, true);
-                components.push_back(component);
+            component.push_back(u);
+
+            if(!reversed) {
+                for(int v : neighbors[u]) {
+                    if(visited[v] == 0) {
+                        visited[v] = 1;
+                        st.push(v);
+                    }
+                }
+            }
+            else {
+                for(int v : reverse_neighbors[u]) {
+                    if(visited[v] == 0) {
+                        visited[v] = 1;
+                        st.push(v);
+                    }
+                }
+            }
+        }
+    }
+
+    void fillOrder(int start, vector<int>& visited, stack<int>& Stack) {
+        visited[start] = true;
+        stack<int> st;
+        stack<int> temp;
+    
+        st.push(start);
+
+        while(!st.empty()) {
+            int u = st.top();
+            st.pop();
+            temp.push(u);
+
+            for(int v : neighbors[u]) {
+                if(visited[v] == 0) {
+                    visited[v] = 1;
+                    st.push(v);
+                }
             }
         }
 
-        cout << "Liczba silnie spójnych składowych: " << components.size() << endl;
-        for (vector<int> component : components) {
-            cout << "Liczba wierzchołków w składowej: " << component.size() << endl;
-            if (V <= 200) {
-                cout << "Wierzchołki składowej: ";
-                for (int u : component) {
-                    cout << u << " ";
+        while(!temp.empty()) {
+            int u = temp.top();
+            temp.pop();
+            Stack.push(u);
+        }
+    }
+
+    void strong_connect() {
+        stack<int> st;
+        vector<int> visited;
+        visited.assign(V + 1, 0);
+
+        for(int u = 1; u <= V; u++) {
+            if(visited[u] == false) {
+                fillOrder(u, visited, st);
+            }
+        }
+
+        for(int u = 1; u <= V; u++) {
+            visited[u] = 0;
+        }
+
+        int i = 0;
+
+        while (!st.empty()) {
+            int u = st.top();
+            st.pop();
+    
+            if (visited[u] == 0)
+            {
+                vector<int> component;
+                dfs2(u, visited, component, true);
+                i++;
+
+                if(V <= 200) {
+                    cout << "Składowa nr " << i << ": \n";
+
+                    for(int v : component) {
+                        cout << v << ", ";
+                    }
+                    cout << endl;
                 }
-                cout << endl;
+            }
+            if(st.empty()) {
+                cout << "Graf posiada " << i << " silnie spójne składowe";
+            }
+        }
+    }
+
+    void bipartite() {
+        queue<int> que;
+        vector<int> colors;
+        colors.assign(V + 1, 0);
+        int x, y, z;
+
+        for(int i = 1; i <= V; i++) {
+            if(colors[i] == 0) {
+                colors[i] = 1;
+                que.push(i);
+
+                while(!que.empty()) {
+                    int u = que.front();
+                    que.pop();
+
+                    for(int v : neighbors[u]) {
+                        if(colors[v] == colors[u]){
+                            cout << "Graf nie jest dwudzielny!\n";
+                            return;
+                        }
+                        if(colors[v] == 0) {
+                            colors[v] = 3 - colors[u];
+                            que.push(v);
+                        }
+                    }
+                }
+            }
+        }
+
+        cout << "Graf jest dwudzielny!\n";
+        if(V <= 200) {
+            cout << "Podział numer 1:\n";
+            for(int i = 1; i <= V; i++) {
+                if(colors[i] == 1) {
+                    cout << i;
+                    if(i != V) cout << ", ";
+                }
+            }
+            cout << "\nPodział numer 2:\n";
+            for(int i = 1; i <= V; i++) {
+                if(colors[i] == 2) {
+                    cout << i;
+                    if(i != V) cout << ", ";
+                }
             }
         }
     }
@@ -247,6 +320,7 @@ int main(int argc, char** argv) {
     //graf.bfs(2, true);
     //graf.dfs(2, true);
     graf.strong_connect();
+    //graf.bipartite();
 
     return 0;
 }
