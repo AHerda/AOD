@@ -30,6 +30,7 @@ model = Model(HiGHS.Optimizer)
 @constraint(model, [i in 1:3], sum(var[i, :]) >= min_p[i])
 # Liczba radiowozów w zmianach musi być większa od wymagań
 @constraint(model, [i in 1:3], sum(var[:, i]) >= min_shift[i])
+
 # Funkcja celu
 @objective(model, Min, sum(var))
 

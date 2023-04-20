@@ -30,6 +30,7 @@ for i in 1:m, j in 1:n; conteners[i, j] == 1
     row_range = max(1, j - k):min(n, j + k)
     @constraint(model, (sum(var[i, row_range]) + sum(var[col_range, j])) >= 1)
 end
+
 # Funkcja celu
 @objective(model, Min, sum(var))
 

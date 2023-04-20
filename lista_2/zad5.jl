@@ -25,6 +25,7 @@ model = Model(HiGHS.Optimizer)
 @constraint(model, [i in 1:3], sum(var[:, i]) <= time_max * 60)
 # Ustawianie maksymalnych popytow
 @constraint(model, [i in 1:4], sum((var ./ mpk)[i, :]) <= maks_demand[i])
+
 # Funkcja celu 
 @objective(model, Max, sum(ipk * (var ./ mpk)) - sum((var ./ 60) * cph))
 

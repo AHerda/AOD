@@ -37,6 +37,7 @@ model = Model(HiGHS.Optimizer)
 @constraint(model, [i in 1:n], sum(var[i, :]) - sum(var[:, i]) == bilance[i])
 #czas nie może przekraczać wyznaczonego ograniczenia
 @constraint(model, sum(var .* time) <= time_cap)
+
 # Funkcja celu
 @objective(model, Min, sum(var .* cost))
 
