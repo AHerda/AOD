@@ -2,7 +2,6 @@
 #include <fstream>
 #include <queue>
 #include <stack>
-#include <list>
 
 using namespace std;
 
@@ -177,41 +176,35 @@ class Graph {
         }
     }
 
-    void fillOrder(int start, vector<int>& visited, stack<int>& Stack) {
+    void fillOrder(int start, vector<int>& visited, queue<int>& que) {
         visited[start] = true;
-        stack<int> st;
-        stack<int> temp;
+        queue<int> q;
     
-        st.push(start);
+        q.push(start);
 
-        while(!st.empty()) {
-            int u = st.top();
-            st.pop();
-            temp.push(u);
+        while(!q.empty()) {
+            int u = q.front();
+            q.pop();
+            que.push(u);
 
             for(int v : neighbors[u]) {
                 if(visited[v] == 0) {
                     visited[v] = 1;
-                    st.push(v);
+                    q.push(v);
                 }
             }
-        }
-
-        while(!temp.empty()) {
-            int u = temp.top();
-            temp.pop();
-            Stack.push(u);
         }
     }
 
     void strong_connect() {
-        stack<int> st;
+        vector<vector<int>> components;
+        queue<int> que;
         vector<int> visited;
         visited.assign(V + 1, 0);
 
         for(int u = 1; u <= V; u++) {
-            if(visited[u] == false) {
-                fillOrder(u, visited, st);
+            if(visited[u] == 0) {
+                fillOrder(u, visited, que);
             }
         }
 
@@ -219,29 +212,27 @@ class Graph {
             visited[u] = 0;
         }
 
-        int i = 0;
-
-        while (!st.empty()) {
-            int u = st.top();
-            st.pop();
+        while (!que.empty()) {
+            int u = que.front();
+            que.pop();
     
-            if (visited[u] == 0)
-            {
+            if (visited[u] == 0) {
                 vector<int> component;
                 dfs2(u, visited, component, true);
-                i++;
-
-                if(V <= 200) {
-                    cout << "Składowa nr " << i << ": \n";
-
-                    for(int v : component) {
-                        cout << v << ", ";
-                    }
-                    cout << endl;
-                }
+                components.push_back(component);
             }
-            if(st.empty()) {
-                cout << "Graf posiada " << i << " silnie spójne składowe";
+        }
+
+        int i = 0;
+        cout << "Graf posiada " << components.size() << " silnie spojnych skladowych\n";
+        for(vector<int> component : components) {
+            cout << "\tSkladowa " << ++i << " zawiera " << component.size() << " elementow\n";
+            if(V <= 200) {
+                cout << "\t\t";
+                for(int u : component) {
+                    cout << u << ", ";
+                }
+                cout << endl;
             }
         }
     }
@@ -277,14 +268,14 @@ class Graph {
 
         cout << "Graf jest dwudzielny!\n";
         if(V <= 200) {
-            cout << "Podział numer 1:\n";
+            cout << "Podzial numer 1:\n";
             for(int i = 1; i <= V; i++) {
                 if(colors[i] == 1) {
                     cout << i;
                     if(i != V) cout << ", ";
                 }
             }
-            cout << "\nPodział numer 2:\n";
+            cout << "\nPodzial numer 2:\n";
             for(int i = 1; i <= V; i++) {
                 if(colors[i] == 2) {
                     cout << i;
@@ -295,12 +286,12 @@ class Graph {
     }
 
     void print_graph(bool neighbors_show = true) {
-        cout << "Liczba wierzchołków: " << V << endl;
-        cout << "Liczba krawędzi: " << E << endl;
+        cout << "Liczba wierzcholkow: " << V << endl;
+        cout << "Liczba krawedzi: " << E << endl;
         cout << "Skierowanie: " << (directionality == DIRECTED ? "TAK" : "NIE") << endl;
 
         if(neighbors_show) {
-            cout << "Lista sąsiedztwa:" << endl;
+            cout << "Lista sasiedztwa:" << endl;
 
             for (int u = 1; u <= V; u++) {
                 cout << u << ": ";
