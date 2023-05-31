@@ -1,4 +1,5 @@
 #include <iostream>
+#include "graph.h"
 
 int main(int argc, char** argv) {
     if(argc != 7) {
@@ -27,6 +28,10 @@ int main(int argc, char** argv) {
             out_file = std::string(argv[i + 1]);
         }
     }
+
+    Graph *g = generateGraph(graph);
+    //g->print_graph();
+    
 
     return 1;
 }
