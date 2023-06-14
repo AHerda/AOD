@@ -36,10 +36,10 @@ void Graph::print_graph() {
     std::cout << "Najmniejszy koszt: " << minWeight << std::endl;
 }
 
-Graph* generateGraph(const std::string& path) {
+std::shared_ptr<Graph> generateGraph(const std::string& path) {
     std::ifstream ifs = std::ifstream(path, std::ios_base::in);
     std::string data;
-    Graph *g;
+    std::shared_ptr<Graph> g;
 
     while (getline(ifs, data)) {
         char* p;
@@ -50,7 +50,7 @@ Graph* generateGraph(const std::string& path) {
         if (strcmp(p, "p") == 0) {
             p = strtok(NULL, " ");
             p = strtok(NULL, " ");
-            g = new Graph(atoi(p));
+            g = std::make_shared<Graph>(atoi(p));
             p = strtok(NULL, " ");
             g->E = atoi(p);
         }
@@ -84,58 +84,19 @@ std::list<int> parseSources(const std::string& path, short mode) {
         if (mode == 1) { //sp
             if (std::string(p) == "s") {
                 p = strtok(NULL, " ");
-                src.push_back(atoi(p) - 1);
+                src.push_back(atoi(p));
             }
         }
         else if (mode == 2) { //p2p
             if (std::string(p) == "q") {
                 p = strtok(NULL, " ");
-                src.push_back(atoi(p) - 1);
+                src.push_back(atoi(p));
                 p = strtok(NULL, " ");
-                src.push_back(atoi(p) - 1);
+                src.push_back(atoi(p));
             }
         }
         delete[] line;
     }
     ifs.close();
     return src;
-}
-
-
-
-
-
-// GŁÓWNE ALGORYTMY
-
-int Graph::dijkstra_1(int source) {
-    std::vector<int> dist(V + 1, INT_MAX);
-    int time = 0;
-    int time_counter;
-
-    std::priority_queue<pii, std::vector<pii>, std::greater<pii>> pq;
-    pq.push({source, 0});
-
-    auto start = std::chrono::high_resolution_clock::now();
-    while(!pq.empty()) {
-        int u = pq.top().first;
-        int cost = pq.top().second;
-        pq.pop();
-
-        for(auto neighbor : this->adj[u]) {
-            int v = neighbor.first;
-            int w = neighbor.second;
-            int new_cost = cost + w;
-
-            if(new_cost < dist[v]) {
-                dist[v] = new_cost;
-                pq.push({v, new_cost});
-
-                auto end = std::chrono::high_resolution_clock::now();
-                time += std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-                time_counter++;
-            }
-        }
-    }
-
-    return time / time_counter;
 }

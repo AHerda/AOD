@@ -1,13 +1,16 @@
-#ifndef graph_h
+#pragma once
+
+#include <utils.h>
+
 #include <iostream>
 #include <vector>
 #include <list>
 #include <fstream>
 #include <string>
 #include <cstring>
-#include <limits.h>
 #include <queue>
 #include <chrono>
+#include <memory>
 
 
 typedef std::pair<int, int> pii;
@@ -26,10 +29,10 @@ public:
     void print_graph();
 
     // DIJKSTRA
-    int dijkstra_1(int source);
+    std::vector<long long> dijkstra(int source);
+    std::vector<long long> dial(int source);
+    std::vector<long long> radix(int source);
 };
 
-Graph* generateGraph(const std::string& path);
+std::shared_ptr<Graph> generateGraph(const std::string& path);
 std::list<int> parseSources(const std::string& path, short mode);
-
-#endif
