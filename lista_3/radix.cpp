@@ -1,4 +1,4 @@
-#include <graph.h>
+#include "graph.h"
 
 std::vector<long long> Graph::radix(int source){
     std::vector<long long> dist(V + 1, LLONG_MAX);
@@ -10,7 +10,7 @@ std::vector<long long> Graph::radix(int source){
     radix_heap rh;
     rh.insert(source, 0);
 
-    while(rh.get_size() > 0) {
+    while(rh.getsize() > 0) {
         int u = rh.extract();
         if(visited[u] == true) continue;
 

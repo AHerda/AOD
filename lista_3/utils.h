@@ -5,6 +5,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <limits.h>
+#include <vector>
 
 struct Node {
   int u;
@@ -75,7 +76,7 @@ public:
     }
 };
 
-struct Bucket_Queue {
+/*struct Bucket_Queue {
 private:
     std::vector<std::list<int>> buckets;
     int least_bucket = INT_MAX;
@@ -101,9 +102,8 @@ public:
         }
         }
 
-        std::list<int> bucket = buckets[least_bucket];
-        int v = bucket.front();
-        bucket.pop_front();
+        int v = buckets[least_bucket].front();
+        buckets[least_bucket].pop_front();
         size -= 1;
         return v;
     }
@@ -112,3 +112,4 @@ public:
         return size;
     }
 };
+*/
