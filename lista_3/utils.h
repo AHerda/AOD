@@ -1,24 +1,21 @@
 #pragma once
 
 #include <array>
+#include <list>
 #include <deque>
 #include <math.h>
 #include <stdio.h>
 #include <limits.h>
 #include <vector>
 
-struct Node {
-  int u;
-  int label;
-
-  Node(int u, int label) : u(u), label(label) {}
-};
+typedef std::pair<int, int> pii;
+typedef std::pair<int, long long> pill;
 
 struct radix_heap {
 private:
     static const int bucket_count = sizeof(int) * 8 + 1;
-    std::array<std::vector<Node>, bucket_count> buckets = {};
-    std::array<int, bucket_count> bucket_minimum;
+    std::array<std::vector<pill>, bucket_count> buckets = {};
+    std::array<long long, bucket_count> bucket_minimum;
     int least = 0;
     int size = 0;
 
@@ -27,43 +24,38 @@ public:
         bucket_minimum.fill(INT_MAX);
     }
 
-    void insert(int u, int const label) {
+    void insert(int u, long long const cost) {
         size += 1;
-        int const bucket = find_bucket(label);
-        buckets[bucket].push_back(Node(u, label));
-        bucket_minimum[bucket] = std::min(bucket_minimum[bucket], label);
+        int const bucket = find_bucket(cost);
+        buckets[bucket].push_back(pill(u, cost));
+        bucket_minimum[bucket] = std::min(bucket_minimum[bucket], cost);
     }
 
-    int extract() {
+    int pop() {
         size -= 1;
         pull();
-        Node value = buckets[0].back();
+        pii value = buckets[0].back();
         buckets[0].pop_back();
-        return value.u;
+        return value.first;
     }
 
-    int getsize() {
+    int get_size() {
         return size;
     }
 
     private:
     void pull() {
-        if(buckets[0].size() > 0) {
-        return;
-        }
+        if(buckets[0].size() > 0) return;
 
-        // Find non-empty bucket.
         int i = 1;
-        while(buckets[i].size() == 0) {
-        i += 1;
-        }
+        while(buckets[i].size() == 0) i += 1;
 
         least = bucket_minimum[i];
 
-        for(Node& v: buckets[i]) {
-        int const bucket = find_bucket(v.label);
-        buckets[bucket].push_back(v);
-        bucket_minimum[bucket] = std::min(bucket_minimum[bucket], v.label);
+        for(pill& v: buckets[i]) {
+            int const bucket = find_bucket(v.second);
+            buckets[bucket].push_back(v);
+            bucket_minimum[bucket] = std::min(bucket_minimum[bucket], v.second);
         }
         buckets[i].clear();
         bucket_minimum[i] = INT_MAX;
@@ -76,10 +68,10 @@ public:
     }
 };
 
-/*struct Bucket_Queue {
+struct bucket_queue {
 private:
-    std::vector<std::list<int>> buckets;
-    int least_bucket = INT_MAX;
+    std::vector<std::list<long long>> buckets;
+    long long least_bucket = LLONG_MAX;
     int size = 0;
 
 public:
@@ -95,11 +87,11 @@ public:
         size += 1;
     }
 
-    int extract() {
+    int pop() {
         if(buckets[least_bucket].size() == 0) {
-        while(buckets[least_bucket].size() == 0) {
-            least_bucket += 1;
-        }
+            while(buckets[least_bucket].size() == 0) {
+                least_bucket += 1;
+            }
         }
 
         int v = buckets[least_bucket].front();
@@ -108,8 +100,7 @@ public:
         return v;
     }
 
-    int size() const {
+    int get_size() const {
         return size;
     }
 };
-*/

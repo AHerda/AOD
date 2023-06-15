@@ -3,15 +3,14 @@
 std::vector<long long> Graph::radix(int source){
     std::vector<long long> dist(V + 1, LLONG_MAX);
     std::vector<char> visited(V + 1, false);
+    
     dist[source] = 0;
-
-    int max_weight = this->maxWeight;
 
     radix_heap rh;
     rh.insert(source, 0);
 
-    while(rh.getsize() > 0) {
-        int u = rh.extract();
+    while(rh.get_size() > 0) {
+        int u = rh.pop();
         if(visited[u] == true) continue;
 
         visited[u] = true;

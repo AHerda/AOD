@@ -1,10 +1,14 @@
 #include "graph.h"
 
+bool priority_compare(pii l, pii r) {
+  return l.second > r.second;
+}
+
 std::vector<long long> Graph::dijkstra(int source) {
     std::vector<long long> dist(V + 1, LLONG_MAX);
     std::vector<char> visited(V + 1, false);
 
-    std::priority_queue<pii, std::vector<pii>, std::greater<>> pq;
+    std::priority_queue<pii, std::vector<pii>, bool (*)(pii l, pii r)> pq(priority_compare);
     pq.push(pii(source, 0));
     dist[source] = 0;
 

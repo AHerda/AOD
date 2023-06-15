@@ -11,9 +11,6 @@
 #include <chrono>
 #include <memory>
 
-
-typedef std::pair<int, int> pii;
-
 class Graph {
 public:
     std::list<pii> *adj; //adjacency list
