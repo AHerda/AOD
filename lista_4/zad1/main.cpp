@@ -3,7 +3,8 @@
 #include <chrono>
 #include "Hypercube.hpp"
 
-void stats() {
+auto stats() -> void
+{
     std::ofstream file("wyniki/wyniki.csv", std::ios_base::out);
     file << "k;flow;time;aug_paths\n";
 
@@ -38,7 +39,7 @@ int main(int argc, char** argv) {
         std::cerr << "wrong number of arguments";
         return 1;
     }
-    if (std::string(argv[1]) == "-size") {
+    if (std::string(argv[1]) == "--size") {
         k = atoi(argv[2]);
         meta = int(pow(2,k) - 1);
     } else return 1;
@@ -47,16 +48,16 @@ int main(int argc, char** argv) {
     auto begin = std::chrono::high_resolution_clock::now();
 
     Hypercube hypercube = Hypercube(k);
-    std::cout << "max flow: " << hypercube.maxFlow(0, meta, numOfPaths) << '\n';
+    std::cout << "Max Flow: " << hypercube.maxFlow(0, meta, numOfPaths) << '\n';
     auto t = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - begin);
 
-    std::cerr << "t = " << t.count() << " µs\n";
-    std::cerr << "number of paths found: " << numOfPaths << "\n";
+    std::cerr << "Execution Time: " << t.count() << " microseconds\n";
+    std::cerr << "# Paths: " << numOfPaths << "\n";
 
-    if (argc >= 4 && std::string(argv[3]) == "-printFlow")
+    if (argc >= 4 && std::string(argv[3]) == "--printFlow")
         hypercube.printFlow();
     
-    stats();
+    //stats();
 
     return 0;
 }
