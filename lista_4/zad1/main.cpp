@@ -3,23 +3,32 @@
 #include <chrono>
 #include "Hypercube.hpp"
 
-void stats(const int k, const int meta) {
-    int d = 20;
-    long long time = 0;
-    long long flow = 0;
-    long long paths = 0;
-    for (int i = 0; i < d; i++) {
-        auto begin = std::chrono::high_resolution_clock::now();
-        Hypercube tmp = Hypercube(k);
-        int p = -1;
-        flow += tmp.maxFlow(0, meta, p);
-        //flow += tmp.DinicMaxflow(0, meta, p);
-        paths += p;
-        auto t = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - begin);
-        time += t.count();
+void stats() {
+    std::ofstream file("wyniki/wyniki.csv", std::ios_base::out);
+    file << "k;flow;time;aug_paths\n";
+
+    for(int k = 1; k <= 16; k++) {
+        int d = 10;
+        long long time;
+        long long flow;
+        long long paths;
+        for (int i = 0; i < d; i++) {
+            std::cout << "powtórzenie " << k << " " << i << std::endl;
+            time = 0;
+            flow = 0;
+            paths = 0;
+            auto begin = std::chrono::high_resolution_clock::now();
+            Hypercube tmp = Hypercube(k);
+            int p = -1;
+            flow = tmp.maxFlow(0, pow(2, k) - 1, p);
+            paths = p;
+            auto t = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - begin);
+            time = t.count();
+
+            file << k << ";" << flow << ";" << time << ";" << paths << "\n";
+        }
     }
-    std::cout << "flow, time, paths:\n";
-    std::cout << flow/d << ' ' << time/d << ' ' << paths/d;
+    file.close();
 }
 
 int main(int argc, char** argv) {
@@ -46,6 +55,8 @@ int main(int argc, char** argv) {
 
     if (argc >= 4 && std::string(argv[3]) == "-printFlow")
         hypercube.printFlow();
+    
+    stats();
 
     return 0;
 }
