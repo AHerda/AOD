@@ -1,11 +1,6 @@
 using JuMP
 import HiGHS
 
-#=
-miniówka
-input penis into vedżajna
-=#
-
 min_auto = [
     2 4 3;
     3 6 5;
